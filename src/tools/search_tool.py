@@ -6,17 +6,10 @@ import os
 TAVILY_API_KEY = os.environ["TAVILY_API_KEY"]
 
 def search_tool(state: ResearchAssistantState):
-  query = state.research_query
+  query = state.get("question")
   
   if not query:
-    return
-  
-  #check for web_search_results and sources are not none
-  if not hasattr(state, "web_search_results") or state.web_search_results is None:
-      state.web_search_results = []
-
-  if not hasattr(state, "sources") or state.sources is None:
-      state.sources = []
+    return {}
   
   try:
     tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
@@ -25,16 +18,23 @@ def search_tool(state: ResearchAssistantState):
   except Exception as e:
     state.web_search_results.extend(f"Search Failed: {str(e)}")
     logger.error("Tavily Web Search Failed")
-    return state.web_search_results
+    return {
+            "context": [f"Search Failed: {str(e)}"]
+        }
     
-  
+  sources =  []
+  context = []
   for r in response.get("results",[]):
     url = r.get("url","")
-    if url and url not in state.sources:
-      state.sources.append(url)
+    sources.append(url)
     
     content = f"{r.get('title', '')}\n{r.get('content', '')}\n{r.get('url', '')}"
-    state.web_search_results.append(content)
+    content.append(content)
+
+  return {
+    "context": context,
+    "sources": sources
+  }
     
   
   
