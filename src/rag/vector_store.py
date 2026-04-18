@@ -1,12 +1,15 @@
 from langchain_astradb import AstraDBVectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
+from dotenv import load_dotenv
+import os
+load_dotenv()
 import os
 
-ASTRA_DB_API_ENDPOINT = os.environ["ASTRA_DB_API_ENDPOINT"]
-ASTRA_DB_APPLICATION_TOKEN = os.environ["ASTRA_DB_APPLICATION_TOKEN"]
-ASTRA_DB_KEYSPACE = os.environ["ASTRA_DB_KEYSPACE"]
+ASTRA_DB_API_ENDPOINT = os.getenv("ASTRA_DB_API_ENDPOINT")
+ASTRA_DB_APPLICATION_TOKEN = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
+ASTRA_DB_KEYSPACE = os.getenv("ASTRA_DB_KEYSPACE")
 
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 def vector_store():
   
